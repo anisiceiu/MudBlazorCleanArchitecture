@@ -1,0 +1,54 @@
+﻿@page "/categories/add"
+@using Application.DTOs
+@using Application.Services
+@using Domain.Entities
+
+@inject CategoryService CategoryService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<MudPaper Class="pa-6 mx-auto mt-4" MaxWidth="600px" Elevation="4">
+    <MudText Typo="Typo.h5" Class="mb-4">Add New Category</MudText>
+
+    <MudForm @ref="form" Model="@category" Validation="ValidateCategory" @bind-IsValid="@isValid">
+        <MudTextField @bind-Value="category.CategoryName" Label="Category Name" For="@(() => category.CategoryName)" Required="true" />
+        <MudTextField @bind-Value="category.Description" Label="Description" For="@(() => category.Description)" Lines="3" />
+
+        <MudButton OnClick="HandleSubmit" Disabled="!isValid" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
+            Save
+        </MudButton>
+        <MudButton OnClick="@(() => NavigationManager.NavigateTo("/categories"))" Variant="Variant.Outlined" Color="Color.Secondary" Class="mt-4 ml-2">
+            Cancel
+        </MudButton>
+    </MudForm>
+</MudPaper>
+
+@code {
+    private MudForm form;
+    private bool isValid;
+    private CategoryDto category = new();
+
+    private async Task HandleSubmit()
+    {
+        await form.Validate();
+        if (!isValid) return;
+
+        var result = await CategoryService.AddCategoryAsync(category);
+
+        if (result > 0)
+        {
+            Snackbar.Add("Category added successfully!", Severity.Success);
+            NavigationManager.NavigateTo("/categories");
+        }
+        else
+        {
+            Snackbar.Add("Failed to add category.", Severity.Error);
+        }
+    }
+
+    private IEnumerable<string> ValidateCategory(Category model)
+    {
+        if (string.IsNullOrWhiteSpace(model.CategoryName))
+            yield return "Category Name is required.";
+    }
+}

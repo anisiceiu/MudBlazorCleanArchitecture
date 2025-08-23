@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Domain.Entities;
 using Domain.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,14 @@ namespace Application.Services
             _repository = repository;
         }
 
+        public async Task<int> AddCategoryAsync(CategoryDto category)
+        {
+           return await _repository.AddAsync(new Category
+            {
+                CategoryName = category.CategoryName,
+                Description = category.Description
+            });
+        }
         public async Task<List<CategoryDto>> GetAllCategoriesAsync()
         {
             var categories = await _repository.GetAllAsync();
