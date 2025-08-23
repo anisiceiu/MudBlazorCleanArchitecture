@@ -7,7 +7,7 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
 
-<MudPaper Class="pa-6 mx-auto mt-4" MaxWidth="600px" Elevation="4">
+<MudPaper Class="pa-6 mt-4" MaxWidth="600px" Elevation="0">
     <MudText Typo="Typo.h5" Class="mb-4">Add New Category</MudText>
 
     <MudForm @ref="form" Model="@category" Validation="ValidateCategory" @bind-IsValid="@isValid">

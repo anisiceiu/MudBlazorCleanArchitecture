@@ -24,9 +24,11 @@ namespace MudBlazorApp
             builder.Services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
             builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<IChartsRepository, ChartsRepository>();
             builder.Services.AddTransient<IDbConnection>(sp =>
                                             new SqlConnection(builder.Configuration.GetConnectionString("NorthwindConnection")));
             builder.Services.AddScoped<CategoryService>();
+            builder.Services.AddScoped<ChartsService>();
 
             var app = builder.Build();
 

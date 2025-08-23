@@ -1,0 +1,86 @@
+﻿@page "/dashboard"
+
+@using Application.Services
+@inject ChartsService chartsService
+
+
+<MudPaper Class="pa-6" MaxWidth="600px" Elevation="0">
+<h3>Dashboard</h3>
+<h4>Sales by Month (Trend / Line Chart)</h4>
+@if (_seriesLineChart?.Any() == true && _xAxisLabelsLineChart?.Any() == true)
+{
+
+        <MudChart ChartType="ChartType.Line" ChartSeries="@_seriesLineChart" @bind-SelectedIndex="_index" XAxisLabels="@_xAxisLabelsLineChart" Width="@_width" Height="@_height" ChartOptions="@_options" AxisChartOptions="_axisChartOptionsLineChart" />
+
+}
+else
+{
+    <MudText>Loading sales chart...</MudText>
+}
+
+<h4>Top 5 Products by Sales (Bar Chart)</h4>
+@if (_seriesBarChart?.Any() == true)
+{
+        <MudChart ChartType="ChartType.Bar"
+              ChartSeries="_seriesBarChart"
+              XAxisLabels="_xAxisLabelsBarChart"
+              Width="100%"
+              Height="400px" />
+}
+else
+{
+    <MudText>Loading top products...</MudText>
+}
+
+</MudPaper>
+
+@code {
+    private List<ChartSeries> _seriesLineChart;
+    private string[] _xAxisLabelsLineChart;
+    private int _index = -1; //default value cannot be 0 -> first selectedindex is 0.
+    private ChartOptions _options = new ChartOptions();
+    private AxisChartOptions _axisChartOptionsLineChart = new AxisChartOptions();
+    private string _width = "650px";
+    private string _height = "350px";
+
+    private List<ChartSeries> _seriesBarChart = new();
+    private string[] _xAxisLabelsBarChart = Array.Empty<string>();
+
+    private async Task LoadBarChartData()
+    {
+        var topProducts = await chartsService.GetGetTopProductsAsync(); // EF or Dapper call
+
+        _xAxisLabelsBarChart = topProducts.Select(p => p.ProductName).ToArray();
+
+        _seriesBarChart = new List<ChartSeries>
+    {
+        new ChartSeries
+        {
+            Name = "Sales",
+            Data = topProducts.Select(p => p.TotalSales).ToArray()
+        }
+    };
+    }
+
+    private async Task LoadLineChartData()
+    {
+        var monthlySales = await chartsService.GetMonthlySalesAsync(); 
+
+        _xAxisLabelsLineChart = monthlySales.Select(m => m.MonthName.Substring(0, 3)).ToArray();
+
+        _seriesLineChart = new List<ChartSeries>
+    {
+        new ChartSeries
+        {
+            Name = "Sales",
+            Data = monthlySales.Select(m => m.TotalSales).ToArray()
+        }
+    };
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadLineChartData();
+        await LoadBarChartData();
+    }
+}
