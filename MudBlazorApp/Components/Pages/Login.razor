@@ -1,0 +1,39 @@
+﻿@page "/"
+@using Application.Services
+@using Microsoft.AspNetCore.Identity
+@using MudBlazorApp.Components.Layout
+@inject ISnackbar Snackbar
+@inject IHttpContextAccessor HttpContextAccessor
+@layout LoginLayout
+
+
+
+<MudCard Class="login-card">
+    <MudText Typo="Typo.h5" Class="mb-6">Login</MudText>
+
+    <MudTextField Label="Username" @bind-Value="Username" FullWidth="true" Class="mb-4" />
+    <MudTextField Label="Password" @bind-Value="Password" InputType="InputType.Password" FullWidth="true" Class="mb-6" />
+
+    <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@DoLogin" FullWidth="true">Login</MudButton>
+</MudCard>
+
+
+
+
+@code {
+    [Inject] AuthService AuthService { get; set; }
+    [Inject] NavigationManager Navigation { get; set; }
+
+
+    string Username;
+    string Password;
+
+    private async Task DoLogin()
+    {
+        var success = await AuthService.ValidateUserAsync(Username, Password);
+        if (success != null)
+            Navigation.NavigateTo("/dashboard");
+        else
+            Snackbar.Add("Invalid credentials", Severity.Error);
+    }
+}

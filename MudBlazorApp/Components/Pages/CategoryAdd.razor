@@ -1,7 +1,9 @@
 ﻿@page "/categories/add"
+@attribute [Authorize(Roles = "Admin")]
 @using Application.DTOs
 @using Application.Services
 @using Domain.Entities
+@using Microsoft.AspNetCore.Authorization
 
 @inject CategoryService CategoryService
 @inject ISnackbar Snackbar

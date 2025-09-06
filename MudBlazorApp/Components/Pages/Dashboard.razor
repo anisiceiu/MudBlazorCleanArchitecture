@@ -1,6 +1,7 @@
 ﻿@page "/dashboard"
-
+@attribute [Authorize]
 @using Application.Services
+@using Microsoft.AspNetCore.Authorization
 @inject ChartsService chartsService
 
 
